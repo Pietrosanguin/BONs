@@ -1,0 +1,26 @@
+reset; 
+model FW.mod;
+data data.dat;
+option solver cplex;
+param z_curr{I};
+param eps:=1e-12;
+param it_fw;
+param grad_mean:=5;
+param grad_variance:=3.5;
+let it_fw:=0;
+let {i in I} grad_curr[i]:=
+max(Normal(grad_mean, grad_variance), 0); 
+let {i in I : grad_curr[i]>10}grad_curr[i]:=10;
+for {it in 1..300}{ 
+let j:=it; 
+solve;
+}
+let it_fw:=1; 
+repeat {
+let {i in I} z_curr[i]:=sum{k in K}a[k,i];
+let {i in I}grad_curr[i]:=5*exp(-5*z_curr[i]);
+for {it in 1..300} { 
+let j:=it;
+solve; 
+}
+until sum{i in I}grad_curr[i]*(sum{k in K}a[k,i]-z_curr[i])>=-eps;

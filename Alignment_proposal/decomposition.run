@@ -1,0 +1,9 @@
+reset;
+model decomposition.mod; 
+data data.dat;
+#ampl.setOption('solver',"C:\Users\pietr\AMPL\cplex.exe")
+option solver cplex; 
+for {it in 1..300} {
+let j:=it; 
+solve; 
+}
